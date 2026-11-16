@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cruscotto</title>
+<meta name="theme-color" content="#143354">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cruscotto">
+<style>
+:root{--navy:#143354;--navy2:#1e4976;--mid:#4d8ab0;--pale:#e6eff6;--bg:#f2f5f8;--card:#fff;--text:#1a2633;
+  --muted:#5f6e7d;--line:#dbe3ea;--ok:#0d9966;--bad:#dc2626;--warn:#c98a00}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:15px}
+header{background:var(--navy);color:#fff;padding:calc(12px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 0 calc(16px + env(safe-area-inset-left));position:sticky;top:0;z-index:5}
+.htop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header h1{font-size:19px;margin:0;font-weight:600;flex:1}
+nav{display:flex;gap:2px;overflow-x:auto;margin-top:8px;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{background:none;border:none;color:#a9c2d8;padding:10px 14px;font:inherit;font-size:14px;border-bottom:3px solid transparent;border-radius:0;white-space:nowrap;cursor:pointer}
+nav button.on{color:#fff;border-bottom-color:#fff;font-weight:600}
+main{max-width:1100px;margin:0 auto;padding:16px 16px calc(24px + env(safe-area-inset-bottom))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.card h2{margin:0 0 12px;font-size:15px;color:var(--navy)}
+button{font:inherit;padding:8px 14px;border-radius:7px;border:1px solid var(--navy);background:var(--navy);color:#fff;cursor:pointer;touch-action:manipulation}
+button.sec{background:#fff;color:var(--navy)}
+input{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:7px;width:100%}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:10px}
+.hidden{display:none!important}
+.pill{font-size:12px;padding:3px 10px;border-radius:999px;background:#3d5f8c;color:#fff;white-space:nowrap}
+.pill.ok{background:var(--ok)}.pill.wait{background:var(--warn)}.pill.bad{background:var(--bad)}
+.years{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.years button{padding:6px 14px;font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--navy2);border-radius:10px;padding:12px}
+.kpi .l{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
+.kpi .v{font-size:21px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:12px;color:var(--muted);margin-top:2px}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);padding:6px 6px;border-bottom:2px solid var(--line)}
+td{padding:7px 6px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.dim td{color:#9aa6b2}
+tfoot td{font-weight:700;border-top:2px solid var(--line);border-bottom:none}
+.scroll{overflow-x:auto}
+.bar{height:5px;background:var(--pale);border-radius:3px;overflow:hidden;margin-top:3px}
+.bar i{display:block;height:100%;background:var(--mid)}
+.gauge{height:12px;background:var(--pale);border-radius:6px;overflow:hidden;margin:10px 0 4px}
+.gauge i{display:block;height:100%}
+.big{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:700;margin-top:4px}
+.badge.pos{background:#e3f6ee}.badge.neg{background:#fdeaea}
+.clist{max-height:300px;overflow-y:auto}
+.crow{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin-top:8px}
+.crow span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+svg text{font-family:inherit}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px}
+.trims{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+.note{font-size:13px;color:var(--muted)}
+.alert{padding:10px 12px;border-radius:8px;border-left:4px solid var(--warn);background:#fff6e0;font-size:14px;margin-bottom:14px}
+.login{max-width:380px;margin:40px auto}
+</style>
+</head>
+<body>
+<header>
+  <div class="htop">
+    <h1>Cruscotto</h1>
+    <span id="stato" class="pill">…</span>
+  </div>
+  <nav id="tabs" class="hidden">
+    <button data-t="fatt" class="on">Fatturato</button>
+    <button data-t="bil">Bilancio</button>
+    <button data-t="info">Info</button>
+  </nav>
+</header>
+<main>
+  <section id="v-login" class="hidden">
+    <div class="card login">
+      <h2>Accesso richiesto</h2>
+      <form id="f-login">
+        <label>Email<input id="l-email" type="email" autocomplete="username" required></label>
+        <label>Password<input id="l-pw" type="password" autocomplete="current-password" required></label>
+        <button type="submit">Accedi</button>
+        <p id="l-err" class="note neg"></p>
+      </form>
+      <p class="note">Sola consultazione. I numeri arrivano dalla Dashboard sul PC dello studio.</p>
+    </div>
+  </section>
+
+  <section id="v-vuoto" class="hidden">
+    <div class="card"><h2>Nessun dato ancora</h2>
+      <p class="note">Sul PC dello studio esegui una volta <b>Collega Cruscotto online.bat</b> (cartella della Dashboard CMV),
+      poi i numeri arrivano qui da soli mentre la Dashboard è accesa.</p></div>
+  </section>
+
+  <div id="avviso"></div>
+  <div class="years" id="anni"></div>
+
+  <section id="v-fatt" class="hidden"></section>
+  <section id="v-bil" class="hidden"></section>
+  <section id="v-info" class="hidden">
+    <div class="card">
+      <h2>Informazioni</h2>
+      <p class="note" id="info-agg"></p>
+      <p class="note">Questa è una copia di <b>sola lettura</b>: caricamenti, modifiche e report si fanno dalla Dashboard sul PC.
+      Mentre la Dashboard è accesa, i numeri si aggiornano qui ogni 10 minuti (solo se sono cambiati).</p>
+      <p class="note">Collegato come <b id="info-utente"></b></p>
+      <button class="sec" id="b-esci">Esci</button>
+    </div>
+    <div class="card hidden" id="c-utenti">
+      <h2>Utenti autorizzati</h2>
+      <p class="note">Possono consultare il cruscotto (sola lettura). Solo tu puoi aggiungerli o toglierli.</p>
+      <table><tbody id="u-lista"></tbody></table>
+      <form id="f-utente" style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <input id="u-email" type="email" placeholder="email della persona" required style="flex:1 1 220px;width:auto">
+        <button type="submit">Aggiungi</button>
+      </form>
+      <p class="note" id="u-msg"></p>
+      <p class="note"><b>Persona nuova, senza account:</b><br>
+      1. Crea l'account in <a href="https://console.firebase.google.com/project/crescita-fcb68/authentication/users" target="_blank" rel="noopener">Firebase → Authentication → Aggiungi utente</a>
+      (con la sua email e una password provvisoria qualsiasi);<br>
+      2. torna qui e premi <b>✉ Password</b> accanto al suo nome: riceve un'email per scegliersi la password, poi entra da questo indirizzo.<br>
+      Chi ha già un account (es. per Crescita) entra subito con la sua password.</p>
+    </div>
+  </section>
+</main>
+
+<script src="firebase-config.js"></script>
+<script type="module">
+const MESI = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+const MESI_L = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const SUB = [['c_materie_prime','Materie prime','#1e4976'],['c_materiale_consumo','Materiale di consumo','#4d8ab0'],
+  ['c_servizi','Servizi','#0d9966'],['c_godimento_beni','Godimento beni di terzi','#f59e0b'],['c_manutenzioni','Manutenzioni','#8b5cf6'],
+  ['c_personale','Personale','#dc2626'],['c_oneri_finanziari','Oneri finanziari','#ec4899'],['c_spese_generali','Spese generali','#64748b'],
+  ['c_ammortamenti','Ammortamenti','#a16207']];
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const eur = v => '€ ' + Math.round(v || 0).toLocaleString('it-IT');
+const sgn = v => (v >= 0 ? '+' : '−') + eur(Math.abs(v)).replace('€ ', '€ ');
+const cls = v => v >= 0 ? 'pos' : 'neg';
+const k = v => Math.abs(v) >= 1e6 ? (v/1e6).toLocaleString('it-IT',{maximumFractionDigits:1}) + ' M' : Math.round(v/1000) + 'k';
+
+let D = null, agg = null, anno = null, tab = 'fatt';
+
+// ── Avvio: Firebase vero, oppure dati di prova solo su localhost con ?test ──
+const local = ['localhost','127.0.0.1'].includes(location.hostname);
+let fb;
+if (local && new URLSearchParams(location.search).has('test')) {
+  fb = {
+    auth: { onChange: cb => cb({ email: 'prova@locale' }), signIn: async () => {}, signOut: async () => location.reload() },
+    listen: async cb => { const r = await fetch('prova.json'); cb(r.ok ? { json: await r.text(), aggiornato: new Date(Date.now() - 3*864e5) } : null, false); },
+    utenti: { lista: [], cb: null,
+      ascolta(cb) { this.cb = cb; cb([...this.lista]); return () => {}; },
+      async aggiungi(e) { if (!this.lista.includes(e)) this.lista.push(e); this.cb([...this.lista]); },
+      async invitoPassword() {},
+      async togli(e) { this.lista = this.lista.filter(x => x !== e); this.cb([...this.lista]); } },
+  };
+  fb.auth.onChange = cb => cb({ email: new URLSearchParams(location.search).get('test') || 'ferruccio.zani@gmail.com' });
+} else {
+  const V = '10.12.2';
+  const { initializeApp } = await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
+  const { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } =
+    await import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`);
+  const { initializeFirestore, persistentLocalCache, doc, onSnapshot, setDoc, arrayUnion, arrayRemove } =
+    await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);
+  const app = initializeApp(window.FIREBASE_CONFIG);
+  const auth = getAuth(app); auth.languageCode = 'it';
+  const db = initializeFirestore(app, { localCache: persistentLocalCache() });
+  const docUtenti = doc(db, 'cmv', 'utenti');
+  fb = {
+    auth: { onChange: cb => onAuthStateChanged(auth, cb), signIn: (e, p) => signInWithEmailAndPassword(auth, e, p), signOut: () => signOut(auth) },
+    listen: (cb, err) => onSnapshot(doc(db, 'cmv', 'dashboard'), { includeMetadataChanges: true },
+      s => cb(s.exists() ? { json: s.data().json, aggiornato: s.data().aggiornato?.toDate?.() } : null, s.metadata.fromCache), err),
+    utenti: {
+      ascolta: cb => onSnapshot(docUtenti, s => cb(s.exists() ? (s.data().emails || []) : []), () => cb([])),
+      // la registrazione libera è disattivata in Firebase (scelta di sicurezza): l'account si crea dalla console
+      aggiungi: email => setDoc(docUtenti, { emails: arrayUnion(email) }, { merge: true }),
+      invitoPassword: email => sendPasswordResetEmail(auth, email),
+      togli: email => setDoc(docUtenti, { emails: arrayRemove(email) }, { merge: true }),
+    },
+  };
+}
+
+const ADMIN = 'ferruccio.zani@gmail.com';
+let stopListen = null, stopUtenti = null;
+fb.auth.onChange(u => {
+  if (stopListen) { stopListen(); stopListen = null; }
+  if (stopUtenti) { stopUtenti(); stopUtenti = null; }
+  if (!u) { mostra('login'); stato('Non collegato', 'bad'); return; }
+  $('info-utente').textContent = u.email;
+  const admin = (u.email || '').toLowerCase() === ADMIN;
+  $('c-utenti').classList.toggle('hidden', !admin);
+  if (admin) stopUtenti = fb.utenti.ascolta(lista => {
+    $('u-lista').innerHTML = lista.length ? lista.map(e => `<tr><td style="word-break:break-all">${esc(e)}</td><td class="n">
+      <button class="sec" data-invito="${esc(e)}" title="Manda l'email per scegliere o cambiare la password">✉ Password</button>
+      <button class="sec" data-togli="${esc(e)}">Togli</button></td></tr>`).join('')
+      : '<tr><td class="note">Per ora solo tu.</td></tr>';
+  }) || null;
+  stato('Caricamento…', 'wait');
+  stopListen = fb.listen((d, cache) => {
+    if (!d) { mostra('vuoto'); stato('Nessun dato', 'wait'); return; }
+    try { D = JSON.parse(d.json); } catch { stato('Dati illeggibili', 'bad'); return; }
+    agg = d.aggiornato || null;
+    if (!anno || !D.anni.includes(anno)) anno = D.mese_corrente?.anno && D.anni.includes(D.mese_corrente.anno) ? D.mese_corrente.anno : D.anni.at(-1);
+    stato(cache ? 'Offline (ultima copia)' : '✓ Aggiornato', cache ? 'wait' : 'ok');
+    disegna();
+  }, e => {
+    stato('Accesso non autorizzato', 'bad'); mostra('vuoto');
+    $('v-vuoto').querySelector('p').textContent = 'Questo account non può leggere il cruscotto (' + (e.code || e.message) + ').';
+  }) || null;
+});
+
+$('f-login').onsubmit = async e => {
+  e.preventDefault(); $('l-err').textContent = '';
+  try { await fb.auth.signIn($('l-email').value.trim(), $('l-pw').value); }
+  catch (er) { $('l-err').textContent = er.code === 'auth/invalid-credential' ? 'Email o password errate.' : (er.code || er.message); }
+};
+$('b-esci').onclick = () => fb.auth.signOut();
+$('f-utente').onsubmit = async e => {
+  e.preventDefault();
+  const email = $('u-email').value.trim().toLowerCase(), msg = $('u-msg');
+  if (email === ADMIN) { msg.textContent = 'Sei già amministratore.'; return; }
+  msg.className = 'note'; msg.textContent = 'Aggiunta in corso…';
+  try {
+    await fb.utenti.aggiungi(email);
+    msg.className = 'note pos';
+    msg.textContent = `${email} aggiunto all'elenco. Se ha già un account (es. Crescita) può entrare subito; altrimenti segui i due passi qui sotto.`;
+    $('u-email').value = '';
+  } catch (er) { msg.className = 'note neg'; msg.textContent = 'Non riuscito: ' + (er.code || er.message); }
+};
+$('u-lista').onclick = async e => {
+  const inv = e.target.closest('[data-invito]');
+  if (inv) {
+    try { await fb.utenti.invitoPassword(inv.dataset.invito);
+      $('u-msg').className = 'note pos'; $('u-msg').textContent = `Email per la password inviata a ${inv.dataset.invito} (se l'account esiste; controllare anche lo spam).`; }
+    catch (er) { $('u-msg').className = 'note neg'; $('u-msg').textContent = 'Non riuscito: ' + (er.code || er.message); }
+    return;
+  }
+  const b = e.target.closest('[data-togli]'); if (!b) return;
+  if (!confirm(`Togliere l'accesso a ${b.dataset.togli}?`)) return;
+  try { await fb.utenti.togli(b.dataset.togli); $('u-msg').textContent = `${b.dataset.togli} non può più consultare il cruscotto.`; }
+  catch (er) { $('u-msg').textContent = 'Non riuscito: ' + (er.code || er.message); }
+};
+$('tabs').onclick = e => { const b = e.target.closest('button'); if (!b) return; tab = b.dataset.t; disegna(); };
+
+function stato(t, c) { const s = $('stato'); s.textContent = t; s.className = 'pill ' + (c || ''); }
+function mostra(v) {
+  ['login','vuoto','fatt','bil','info'].forEach(x => $('v-' + x).classList.toggle('hidden', x !== v));
+  $('tabs').classList.toggle('hidden', !['fatt','bil','info'].includes(v));
+  $('anni').classList.toggle('hidden', !['fatt','bil'].includes(v));
+  if (!['fatt','bil','info'].includes(v)) $('avviso').innerHTML = '';
+}
+
+function disegna() {
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
+  mostra(tab);
+  $('anni').innerHTML = D.anni.map(a => `<button class="${a === anno ? '' : 'sec'}" data-a="${a}">${a}</button>`).join('');
+  $('anni').onclick = e => { const b = e.target.closest('button'); if (b) { anno = +b.dataset.a; disegna(); } };
+  const ore = agg ? (Date.now() - agg.getTime()) / 36e5 : null;
+  const quando = agg ? agg.toLocaleString('it-IT', { dateStyle: 'medium', timeStyle: 'short' }) : 'sconosciuto';
+  $('avviso').innerHTML = ore != null && ore > 48
+    ? `<div class="alert">Numeri aggiornati il ${quando}: da allora la Dashboard sul PC non è stata accesa.</div>` : '';
+  $('info-agg').innerHTML = `Ultima pubblicazione dal PC: <b>${quando}</b><br>Ultimo file ordini caricato nella Dashboard: <b>${esc(D.ultimo_file || 'N/D')}</b>`;
+  if (tab === 'fatt') fatturato();
+  if (tab === 'bil') bilancio();
+}
+
+// ── Grafico a barre SVG (serie affiancate, linea opzionale) ──
+function grafico(serie, linea, opt = {}) {
+  const W = innerWidth < 600 ? 400 : 720, H = innerWidth < 600 ? 240 : 260, L = 40, B = 22, T = 10, R = 6;  // sul telefono testo leggibile
+  const valori = [...serie.flatMap(s => s.v), ...(linea ? linea.v : []), opt.rif || 0];
+  const max = Math.max(...valori, 1) * 1.08;
+  const y = v => T + (H - T - B) * (1 - v / max);
+  const cw = (W - L - R) / 12, bw = (cw * 0.72) / serie.length;
+  let g = '';
+  for (let i = 0; i <= 4; i++) {
+    const v = max * i / 4;
+    g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#e6ecf1"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="#5f6e7d">${k(v)}</text>`;
+  }
+  for (let m = 0; m < 12; m++) {
+    const x0 = L + cw * m + cw * 0.14;
+    serie.forEach((s, j) => {
+      const v = s.v[m] || 0; if (!v) return;
+      g += `<rect x="${x0 + j * bw}" y="${y(v)}" width="${bw - 1}" height="${y(0) - y(v)}" rx="3" fill="${s.c}"${opt.dim?.(m) ? ' opacity=".35"' : ''}><title>${MESI_L[m]} — ${s.n}: ${eur(v)}</title></rect>`;
+    });
+    g += `<text x="${L + cw * m + cw / 2}" y="${H - 6}" text-anchor="middle" font-size="12" fill="#5f6e7d">${MESI[m]}</text>`;
+  }
+  if (linea) {
+    const pts = linea.v.map((v, m) => v ? `${L + cw * m + cw / 2},${y(v)}` : null).filter(Boolean);
+    g += `<polyline points="${pts.join(' ')}" fill="none" stroke="${linea.c}" stroke-width="2.5" stroke-dasharray="6 4"/>` +
+      pts.map(p => `<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="3.5" fill="${linea.c}"/>`).join('');
+  }
+  if (opt.rif) g += `<line x1="${L}" x2="${W - R}" y1="${y(opt.rif)}" y2="${y(opt.rif)}" stroke="#dc2626" stroke-dasharray="5 4" stroke-width="1.5"/>`;
+  const leg = [...serie, ...(linea ? [linea] : []), ...(opt.rif ? [{ n: opt.rifN, c: '#dc2626' }] : [])]
+    .map(s => `<span><i style="background:${s.c}"></i>${esc(s.n)}</span>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">${g}</svg><div class="legend">${leg}</div>`;
+}
+
+function fatturato() {
+  const BEP = D.bep || 330000;
+  const mc = D.mese_corrente || {};
+  const corrente = anno === mc.anno;
+  const per = {}; D.mensile.filter(d => d.anno === anno).forEach(d => per[d.mese] = d.fatturato);
+  const valori = Object.values(per);
+  const tot = valori.reduce((s, v) => s + v, 0);
+  const media = valori.length ? tot / valori.length : 0;
+
+  let cum = 0, peggio = 0, peggioM = '—', righe = '', totR = 0, totB = 0;
+  for (let m = 1; m <= 12; m++) {
+    const v = per[m], fut = corrente && m > mc.mese;
+    if (v === undefined) { righe += `<tr class="dim"><td>${MESI_L[m-1]}</td><td class="n" colspan="2">${fut ? 'mese futuro' : 'nessun dato'}</td></tr>`; continue; }
+    const d = v - BEP;
+    if (!fut) { cum += d; totR += v; totB += BEP; if (d < peggio) { peggio = d; peggioM = MESI_L[m-1]; } }
+    righe += `<tr class="${fut ? 'dim' : ''}"><td>${MESI_L[m-1]}${fut ? ' <small>(futuro)</small>' : ''}</td><td class="n">${eur(v)}</td><td class="n ${fut ? '' : cls(d)}"><b>${sgn(d)}</b></td></tr>`;
+  }
+
+  let h = `<div class="kpis">
+    <div class="kpi"><div class="l">Fatturato ${anno}</div><div class="v">${eur(tot)}</div></div>
+    <div class="kpi"><div class="l">Media mensile</div><div class="v">${eur(media)}</div><div class="s">sui mesi con ordini</div></div>
+    <div class="kpi" style="border-top-color:${cum >= 0 ? 'var(--ok)' : 'var(--bad)'}"><div class="l">Utile / perdita vs break even</div>
+      <div class="v ${cls(cum)}">${sgn(cum)}</div><div class="s">${corrente ? 'fino a ' + MESI_L[mc.mese - 1] : 'anno ' + anno} · BE ${eur(BEP)}/mese</div></div>
+    ${corrente && D.proiezione ? `<div class="kpi" style="border-top-color:var(--mid)"><div class="l">Proiezione fine anno</div><div class="v">${eur(D.proiezione.proiezione_12m)}</div>
+      <div class="s">su ${D.proiezione.mesi_con_dati} mesi · ancora ${D.proiezione.mesi_rimasti} da consegnare</div></div>` : ''}
+  </div>`;
+
+  if (corrente) {
+    const f = mc.fatturato || 0, pct = f / BEP * 100, d = f - BEP, col = d >= 0 ? 'var(--ok)' : 'var(--bad)';
+    const cl = mc.top_clienti || [], mx = Math.max(...cl.map(c => c.fatturato), 1);
+    h += `<div class="card"><h2>Mese corrente — ${esc(mc.nome)} ${mc.anno}</h2><div class="grid2"><div>
+      <div class="note">Fatturato consegnato</div><div class="big">${eur(f)}</div>
+      <span class="badge ${cls(d)}">${d >= 0 ? '▲ Utile' : '▼ Perdita'} ${sgn(d)}</span>
+      <div class="gauge"><i style="width:${Math.min(pct, 100)}%;background:${col}"></i></div>
+      <div class="note" style="color:${col}">${pct.toFixed(1)}% del break even (${eur(BEP)})</div></div>
+      <div><div class="note">Clienti del mese</div><div class="clist">${cl.length ? cl.map(c => `<div class="crow"><span>${esc(c.cliente)}</span><span>${eur(c.fatturato)}</span></div>
+        <div class="bar"><i style="width:${Math.round(c.fatturato / mx * 100)}%"></i></div>`).join('') : '<p class="note">Nessun cliente nel mese</p>'}</div></div>
+    </div></div>`;
+  }
+
+  h += `<div class="card"><h2>Fatturato mensile ${anno}</h2>${grafico(
+      [{ n: 'Fatturato', c: '#1e4976', v: MESI.map((_, i) => per[i + 1] || 0) }], null,
+      { rif: BEP, rifN: 'Break even', dim: m => corrente && m + 1 > mc.mese })}</div>`;
+
+  const cli = (D.clienti_anno || {})[anno] || [], mx = Math.max(...cli.map(c => c.fatturato), 1);
+  h += `<div class="grid2">
+    <div class="card"><h2>Mese per mese vs break even</h2><div class="scroll"><table>
+      <thead><tr><th>Mese</th><th class="n">Fatturato</th><th class="n">Utile/perdita</th></tr></thead>
+      <tbody>${righe}</tbody>
+      <tfoot><tr><td>Totale</td><td class="n">${eur(totR)}</td><td class="n ${cls(totR - totB)}">${sgn(totR - totB)}</td></tr></tfoot></table></div>
+      <p class="note">Mese più critico: <b>${peggioM}</b>${peggio < 0 ? ' (' + sgn(peggio) + ')' : ''}</p></div>
+    <div class="card"><h2>Clienti ${anno}</h2>${cli.length ? cli.map((c, i) => `<div class="crow"><span>${i + 1}. ${esc(c.cliente)}</span><span>${eur(c.fatturato)}</span></div>
+      <div class="bar"><i style="width:${Math.round(c.fatturato / mx * 100)}%"></i></div>`).join('') : '<p class="note">Nessun dato</p>'}
+      ${cli.length >= 40 ? '<p class="note">Primi 40 clienti.</p>' : ''}</div>
+  </div>`;
+  $('v-fatt').innerHTML = h;
+}
+
+function bilancio() {
+  const yb = (D.bilancio || {})[String(anno)] || {};
+  if (!Object.keys(yb).length) { $('v-bil').innerHTML = `<div class="card"><h2>Bilancio ${anno}</h2><p class="note">Nessun dato di bilancio per il ${anno}.</p></div>`; return; }
+  const ord = {}; D.mensile.filter(d => d.anno === anno).forEach(d => ord[d.mese] = d.fatturato);
+  const R = [], C = [], O = [];
+  for (let m = 1; m <= 12; m++) { const b = yb[m] || {}; R.push(b.ricavi || 0); C.push(b.costi || 0); O.push(ord[m] || 0); }
+  const sum = a => a.reduce((s, v) => s + v, 0);
+  const tR = sum(R), tC = sum(C), mg = tR - tC;
+
+  let h = `<div class="kpis">
+    <div class="kpi" style="border-top-color:var(--ok)"><div class="l">Ricavi bilancio ${anno}</div><div class="v">${eur(tR)}</div></div>
+    <div class="kpi" style="border-top-color:var(--bad)"><div class="l">Costi bilancio ${anno}</div><div class="v">${eur(tC)}</div></div>
+    <div class="kpi" style="border-top-color:${mg >= 0 ? 'var(--ok)' : 'var(--bad)'}"><div class="l">Margine reale</div><div class="v ${cls(mg)}">${sgn(mg)}</div><div class="s">ricavi − costi</div></div>
+  </div><div class="trims">`;
+  for (let q = 0; q < 4; q++) {
+    const r = sum(R.slice(q * 3, q * 3 + 3)), c = sum(C.slice(q * 3, q * 3 + 3));
+    h += `<div class="kpi"><div class="l">${q + 1}° trimestre · ${MESI[q*3]}–${MESI[q*3+2]}</div>
+      ${r || c ? `<div class="v ${cls(r - c)}">${sgn(r - c)}</div><div class="s">ricavi ${eur(r)} · costi ${eur(c)}</div>` : '<div class="s">nessun dato</div>'}</div>`;
+  }
+  h += `</div><div class="card"><h2>Raffronto mensile ${anno}</h2>${grafico(
+    [{ n: 'Fatturato ordini', c: '#1e4976', v: O }, { n: 'Ricavi bilancio', c: '#0d9966', v: R }], { n: 'Costi bilancio', c: '#dc2626', v: C })}</div>`;
+
+  // composizione costi dell'anno
+  const tot = {}; Object.values(yb).forEach(b => SUB.forEach(([key]) => tot[key] = (tot[key] || 0) + ((b.sub || {})[key] || 0)));
+  const somma = Object.values(tot).reduce((s, v) => s + v, 0);
+  if (somma > 0) {
+    const ord2 = SUB.filter(([key]) => tot[key] > 0).sort((a, b) => tot[b[0]] - tot[a[0]]);
+    h += `<div class="card"><h2>Costi ${anno} per categoria</h2>
+      <svg viewBox="0 0 100 6" width="100%" height="22" preserveAspectRatio="none">${(() => { let x = 0; return ord2.map(([key, , c]) => { const w = tot[key] / somma * 100; const r = `<rect x="${x}" y="0" width="${w}" height="6" fill="${c}"/>`; x += w; return r; }).join(''); })()}</svg>
+      <table style="margin-top:8px"><tbody>${ord2.map(([key, n, c]) => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${c};margin-right:7px"></span>${n}</td>
+        <td class="n">${eur(tot[key])}</td><td class="n">${(tot[key] / somma * 100).toFixed(1)}%</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td>Totale</td><td class="n">${eur(somma)}</td><td></td></tr></tfoot></table>
+      <p class="note">Ammortamenti, INAIL e TFR sono ripartiti in dodicesimi come nella Dashboard.</p></div>`;
+  }
+
+  h += `<div class="card"><h2>Dettaglio mese per mese ${anno}</h2><div class="scroll"><table>
+    <thead><tr><th>Mese</th><th class="n">Fatturato</th><th class="n">Ricavi</th><th class="n">Costi</th><th class="n">Margine</th></tr></thead><tbody>`;
+  for (let m = 0; m < 12; m++) {
+    if (!R[m] && !C[m]) { h += `<tr class="dim"><td>${MESI_L[m]}</td><td class="n">${O[m] ? eur(O[m]) : '—'}</td><td class="n" colspan="3">nessun dato di bilancio</td></tr>`; continue; }
+    h += `<tr><td>${MESI_L[m]}</td><td class="n">${eur(O[m])}</td><td class="n">${eur(R[m])}</td><td class="n">${eur(C[m])}</td><td class="n ${cls(R[m] - C[m])}"><b>${sgn(R[m] - C[m])}</b></td></tr>`;
+  }
+  h += `</tbody><tfoot><tr><td>Totale</td><td class="n">${eur(sum(O))}</td><td class="n">${eur(tR)}</td><td class="n">${eur(tC)}</td><td class="n ${cls(mg)}">${sgn(mg)}</td></tr></tfoot></table></div></div>`;
+  $('v-bil').innerHTML = h;
+}
+
+let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => D && disegna(), 200); });
+if ('serviceWorker' in navigator && !local) navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
